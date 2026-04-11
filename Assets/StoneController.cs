@@ -8,7 +8,6 @@ public class StoneController : MonoBehaviour
     public float chargeSpeed = 500f;
     public float rotationSpeed = 100f;
     public float maxCurl = 2f;
-    public Slider powerBar;
     public LineRenderer trajectoryLine;
     public int simulationSteps = 80;
     public float timeStep = 0.05f;
@@ -20,12 +19,25 @@ public class StoneController : MonoBehaviour
 
     private bool isCharging = false;
     private bool hasLaunched = false;
+    private GameManager gameManager;
+    private bool hasStopped = false;
+
+    float stopTimer = 0f;
+    public float stopThreshold = 0.08f;
+    public float stopTimeRequired = 0.5f;
+
+    private Slider powerBar;
 
     void Start()
     {
+        currentForce = 0f;
+        hasLaunched = false;
+        hasStopped = false;
+        powerBar = GameObject.Find("PowerBar").GetComponent<Slider>();
         rb = GetComponent<Rigidbody>();
+        gameManager = FindFirstObjectByType<GameManager>();
     }
-
+    
     void Update()
     {
         DrawTrajectory();
@@ -40,6 +52,11 @@ public class StoneController : MonoBehaviour
         HandleAiming();
         HandlePower();
         HandleCurl();
+    }
+
+    void FixedUpdate()
+    {
+        CheckIfStopped();
     }
 
     void HandleAiming()
@@ -85,7 +102,7 @@ public class StoneController : MonoBehaviour
     {
         rb.AddForce(transform.forward * currentForce);
 
-        // apply spin (WIP)
+        // apply spin 
         rb.AddTorque(Vector3.up * currentCurl, ForceMode.Impulse);
 
         hasLaunched = true;
@@ -95,6 +112,7 @@ public class StoneController : MonoBehaviour
     {
         float speed = rb.linearVelocity.magnitude;
 
+        if (speed < 0.2f) return;
         if (speed > 0.1f) //stone is moving
         {
             Vector3 sideways = Vector3.Cross(rb.linearVelocity.normalized, Vector3.up); //get sideways direction
@@ -147,5 +165,33 @@ public class StoneController : MonoBehaviour
 
         trajectoryLine.positionCount = simulationSteps;
         trajectoryLine.SetPositions(points);
+    }
+
+    void CheckIfStopped()
+    {
+        if (!hasLaunched || hasStopped) return;
+
+        float speed = rb.linearVelocity.magnitude;
+       
+        if (speed < 0.3f) //change this number to hard stop faster
+        {
+            stopTimer += Time.fixedDeltaTime;
+
+            if (stopTimer >= 0.5f)
+            {
+                hasStopped = true;
+
+                // HARD STOP
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+                rb.Sleep(); // important
+
+                gameManager.OnStoneStopped();
+            }
+        }
+        else
+        {
+            stopTimer = 0f;
+        }
     }
 }
