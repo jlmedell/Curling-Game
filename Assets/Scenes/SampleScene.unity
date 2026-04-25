@@ -954,11 +954,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f70c559bc9415bf408d18e20e07f062a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  stonePrefab: {fileID: 6167742497237841138, guid: 60df5789206fc144ea10dd4311008a02, type: 3}
-  spawnPoint: {fileID: 1025124707}
-  stonesPerTeam: 4
-  totalRounds: 2
-  totalStonesPerTeam: 4
+  prefab: {fileID: 6167742497237841138, guid: 60df5789206fc144ea10dd4311008a02, type: 3}
+  spawn: {fileID: 1025124707}
   scoringCircle: {fileID: 778619361}
   scoreDisplay: {fileID: 381933864}
   currentEndDisplay: {fileID: 1678192082}

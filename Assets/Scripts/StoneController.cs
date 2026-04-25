@@ -4,192 +4,162 @@ using UnityEngine.UI;
 
 public class StoneController : MonoBehaviour
 {
-    public float maxForce = 1000f;
-    public float chargeSpeed = 500f;
     public float rotationSpeed = 100f;
-    public float maxCurl = 2f;
-    public LineRenderer trajectoryLine;
-    public int simulationSteps = 80;
-    public float timeStep = 0.05f;
-
-    private Rigidbody rb;
-
-    private float currentForce = 0f;
-    private float currentCurl = 0.1f;
-
-    private bool isCharging = false;
-    private bool hasLaunched = false;
-    private GameManager gameManager;
-    private bool hasStopped = false;
-
+    public LineRenderer trajectory; //aim indictor line
+    private Rigidbody body;
+    private float force = 0f; //current force
+    private float curl = 0.1f; //current curl force
+    private bool charging = false;
+    private bool launched = false;
+    private GameManager gamemanager;
+    private bool stopped = false;
     float stopTimer = 0f;
-    public float stopThreshold = 0.08f;
-    public float stopTimeRequired = 0.5f;
 
     public bool inHome = false;
     public float distanceFromCenter;
 
-    private Slider powerBar;
+    private Slider bar; //power bar
 
     void Start()
     {
-        currentForce = 0f;
-        hasLaunched = false;
-        hasStopped = false;
-        powerBar = GameObject.Find("PowerBar").GetComponent<Slider>();
-        rb = GetComponent<Rigidbody>();
-        gameManager = FindFirstObjectByType<GameManager>();
+        force = 0f;
+        launched = false;
+        stopped = false;
+        bar = GameObject.Find("PowerBar").GetComponent<Slider>();
+        body = GetComponent<Rigidbody>();
+        gamemanager = FindFirstObjectByType<GameManager>();
     }
-    
+
     void Update()
     {
-        DrawTrajectory();
-        if (hasLaunched)
+        Trajectory();
+
+        if (launched)
         {
-            trajectoryLine.enabled = false;
-            ApplyCurl();
+            trajectory.enabled = false;
             return;
         }
-        Vector3 indicatorRotation = new Vector3(0, 0, -currentCurl * 20f);
-        transform.GetChild(0).localRotation = Quaternion.Euler(indicatorRotation);
-        HandleAiming();
-        HandlePower();
-        HandleCurl();
+        Vector3 rotate = new Vector3(0, 0, -curl * 20f); //aim indicator rotation
+        transform.GetChild(0).localRotation = Quaternion.Euler(rotate);
+
+        Aim();
+        Power();
+        if (Keyboard.current.leftArrowKey.isPressed)
+        {
+            curl = curl - Time.deltaTime;
+        }
+        if (Keyboard.current.rightArrowKey.isPressed)
+        {
+            curl = curl + Time.deltaTime;
+        }
+        curl = Mathf.Clamp(curl, -2f, 2f); //2 = max curl force
     }
 
     void FixedUpdate()
     {
-        CheckIfStopped();
+        if (launched)
+        {
+            Curl(); 
+        }
+
+        IfStop(); //check if stone has stopped
     }
 
-    void HandleAiming()
+    void Aim()
     {
-        float rotateInput = 0f;
-
+        float input = 0f;
         if (Keyboard.current.aKey.isPressed)
-            rotateInput = -1f;
+        {
+           input = -1f;
+        }
         if (Keyboard.current.dKey.isPressed)
-            rotateInput = 1f;
-
-        transform.Rotate(Vector3.up, rotateInput * rotationSpeed * Time.deltaTime);
+        {
+            input = 1f;
+        }
+        transform.Rotate(Vector3.up, input * rotationSpeed * Time.deltaTime);
     }
 
-    void HandlePower()
+    void Power()
     {
         if (Keyboard.current.spaceKey.isPressed)
         {
-            isCharging = true;
-            currentForce += chargeSpeed * Time.deltaTime;
-            currentForce = Mathf.Clamp(currentForce, 0, maxForce);
+            charging = true;
+            force = force + 500f * Time.deltaTime;
+            force = Mathf.Clamp(force, 0, 1000f); //1000 = max force
         }
 
-        if (Keyboard.current.spaceKey.wasReleasedThisFrame && isCharging)
+        if (Keyboard.current.spaceKey.wasReleasedThisFrame && charging)
         {
             Launch();
         }
-        powerBar.value = currentForce / maxForce;
-    }
-
-    void HandleCurl()
-    {
-        if (Keyboard.current.leftArrowKey.isPressed)
-            currentCurl -= Time.deltaTime;
-
-        if (Keyboard.current.rightArrowKey.isPressed)
-            currentCurl += Time.deltaTime;
-
-        currentCurl = Mathf.Clamp(currentCurl, -maxCurl, maxCurl);
+        bar.value = force / 1000f;
     }
 
     void Launch()
     {
-        rb.AddForce(transform.forward * currentForce);
+        body.AddForce(transform.forward * (force * Time.fixedDeltaTime), ForceMode.Impulse); //impulse scaling for forward force
+        body.AddTorque(Vector3.up * curl, ForceMode.Impulse);
 
-        // apply spin 
-        rb.AddTorque(Vector3.up * currentCurl, ForceMode.Impulse);
-
-        hasLaunched = true;
+        launched = true;
     }
 
-    void ApplyCurl()
+    void Curl()
     {
-        float speed = rb.linearVelocity.magnitude;
-
-        if (speed < 0.2f) return;
-        if (speed > 0.1f) //stone is moving
+        float speed = body.linearVelocity.magnitude;
+        if (speed < 0.2f)
         {
-            Vector3 sideways = Vector3.Cross(rb.linearVelocity.normalized, Vector3.up); //get sideways direction
-
-            float curlForce = currentCurl * speed * 0.3f;
-
-            rb.AddForce(sideways * curlForce);
-        }
-        Debug.DrawRay(transform.position, transform.right * currentCurl * 2f, Color.blue);
-    }
-
-    void DrawTrajectory()
-    {
-        if (hasLaunched)
-        {
-            trajectoryLine.enabled = false;
             return;
         }
-
-        trajectoryLine.enabled = true;
-
-        Vector3[] points = new Vector3[simulationSteps];
-
-        Vector3 simPosition = transform.position;
-
-       
-        Vector3 simVelocity = transform.forward * (currentForce * Time.fixedDeltaTime / rb.mass);
-
-        for (int i = 0; i < simulationSteps; i++)
-        {
-            float speed = simVelocity.magnitude;
-
-            // curl
-            if (speed > 0.01f)
-            {
-                Vector3 sideways = Vector3.Cross(simVelocity.normalized, Vector3.up);
-
-                float curlForce = currentCurl * speed * 0.3f;
-
-                simVelocity += sideways * curlForce * timeStep;
-            }
-
-            //drag
-            simVelocity *= Mathf.Clamp01(1f - rb.linearDamping * timeStep);
-
-            simPosition += simVelocity * timeStep;
-
-            points[i] = simPosition;
-        }
-
-        trajectoryLine.positionCount = simulationSteps;
-        trajectoryLine.SetPositions(points);
+        Vector3 sideways = Vector3.Cross(body.linearVelocity.normalized, Vector3.up); //sideways force for curl
+        body.AddForce(sideways * (curl * speed * 0.3f));
+        Debug.DrawRay(transform.position, sideways * curl * 2f, Color.blue);
     }
 
-    void CheckIfStopped()
+    void Trajectory()
     {
-        if (!hasLaunched || hasStopped) return;
-
-        float speed = rb.linearVelocity.magnitude;
-       
-        if (speed < 0.3f) //change this number to hard stop faster
+        if (launched)
         {
-            stopTimer += Time.fixedDeltaTime;
+            trajectory.enabled = false;
+            return;
+        }
+        trajectory.enabled = true;
+        Vector3[] points = new Vector3[80];
+        Vector3 position = transform.position; //expected position
+        Vector3 ev = transform.forward * (force * 0.01f); //expected velocity
+        for (int i = 0; i < 80; i++)
+        {
+            float speed = ev.magnitude;
+            if (speed > 0.01f)
+            {
+                Vector3 sideways = Vector3.Cross(ev.normalized, Vector3.up);
+                ev = ev + sideways * (curl * speed * 0.3f) * 0.05f;
+            }
+            ev = ev * Mathf.Clamp01(1f - body.linearDamping * 0.05f);
+            position = position + ev * 0.05f;
+            points[i] = position;
+        }
+        trajectory.positionCount = 80;
+        trajectory.SetPositions(points);
+    }
 
+    void IfStop()
+    {
+        if (!launched || stopped)
+        {
+            return;
+        }
+        float speed = body.linearVelocity.magnitude;
+        if (speed < 0.3f)
+        {
+            stopTimer = stopTimer + Time.fixedDeltaTime;
             if (stopTimer >= 0.5f)
             {
-                hasStopped = true;
-
-                // HARD STOP
-                rb.linearVelocity = Vector3.zero;
-                rb.angularVelocity = Vector3.zero;
-                rb.Sleep(); // important
-
-                gameManager.OnStoneStopped();
+                stopped = true;
+                //gradual stop
+                body.linearDamping = 10f;
+                body.angularDamping = 10f;
+                body.Sleep();
+                gamemanager.Stopped();
             }
         }
         else

@@ -1,28 +1,21 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.InputSystem;
-//For lists
 using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject stonePrefab;
-    public Transform spawnPoint;
-
-    public int stonesPerTeam = 4;
-    public int totalRounds = 2;
-
-    private int currentRound = 1;
-    private int stonesThrown = 0;
+    public GameObject prefab; //stone prefab
+    public Transform spawn; //spawn point
+    private int round = 1; //current round
+    private int throws = 0; //number of stones thrown
     private int currentTeam = 0;
-    private string[] teamName = {"Blue", "Red"};
-    private int redScore = 0;
-    private int blueScore = 0;
+    private string[] team = {"Blue", "Red"};
+    private int score1 = 0; //red team score
+    private int score2 = 0; //blue team score
+    private GameObject curr; //current stone
 
-    private GameObject currentStone;
-    public int totalStonesPerTeam = 4;
-
-    //Scoring
+    //scoring
     public GameObject scoringCircle;
     
     //UI
@@ -35,20 +28,18 @@ public class GameManager : MonoBehaviour
     }
     void StartRound()
     {
-        Debug.Log("Starting Round " + currentRound);
-
-        stonesThrown = 0;
+        throws = 0;
         currentTeam = 0;
 
         updateRoundDisplay();
         updateScoreDisplay();
 
-        CleanupStones();
+        Cleanup(); //delete stones
 
-        SpawnNextStone();
+        NextStone();
     }
 
-    void CleanupStones()
+    void Cleanup()
 {
     StoneController[] stones = FindObjectsOfType<StoneController>();
 
@@ -57,50 +48,47 @@ public class GameManager : MonoBehaviour
         Destroy(stone.gameObject);
     }
 }
-    public void SpawnNextStone()
+    public void NextStone()
     {
-        if (stonesThrown >= stonesPerTeam * 2)
+        if (throws >= 8)
         {
             EndRound();
             return;
         }
+        curr = Instantiate(prefab, spawn.position, spawn.rotation);
 
-        currentStone = Instantiate(stonePrefab, spawnPoint.position, spawnPoint.rotation);
-
-        Renderer r = currentStone.GetComponentInChildren<Renderer>();
+        Renderer r = curr.GetComponentInChildren<Renderer>();
         if (r != null)
         {
             r.material.color = (currentTeam == 0) ? Color.red : Color.blue;
         }
-        currentStone.tag = (currentTeam == 0) ? "RedStone" : "BlueStone";
+        curr.tag = (currentTeam == 0) ? "RedStone" : "BlueStone";
 
-        stonesThrown++;
+        throws = throws + 1;
         currentTeam = 1 - currentTeam;
         updateRoundDisplay();
     }
 
     void updateRoundDisplay()
     {
-        currentEndDisplay.text = string.Format("Round {0}\nTeam {1}", (currentRound), (teamName[currentTeam]));
+        currentEndDisplay.text = string.Format("Round {0}\nTeam {1}", (round), (team[currentTeam]));
     }
 
     void updateScoreDisplay()
     {
-        scoreDisplay.text = string.Format("Scores\n Red {0}\n Blue {1}", (redScore), (blueScore));
+        scoreDisplay.text = string.Format("Scores\n Red {0}\n Blue {1}", (score1), (score2));
     }
 
     void EndRound()
     {
-        Debug.Log("Round " + currentRound + " Complete");
-
         scoring();
 
-        currentRound++;
+        round = round + 1;
         updateRoundDisplay();
 
-        if (currentRound > totalRounds)
+        if (round > 2)
         {
-            EndGame();
+            end();
         }
         else
         {
@@ -110,37 +98,36 @@ public class GameManager : MonoBehaviour
 
     void scoring()
     {
-        //Lists to store all Red stones and Blue stones
-        List<StoneController> redStones = new List<StoneController>();
-        List<StoneController> blueStones = new List<StoneController>();
+        List<StoneController> reds = new List<StoneController>(); //red stones
+        List<StoneController> blues = new List<StoneController>(); //blue stones
 
         StoneController[] stones = FindObjectsOfType<StoneController>();
 
         StoneController closestRed = null;
         StoneController closestBlue = null;
         
-        //Seperate stones
+        //seperate stones
         foreach (StoneController stone in stones)
         {
             if(stone.tag == "RedStone")
             {
-                redStones.Add(stone);
+                reds.Add(stone);
             }
             else
             {
-                blueStones.Add(stone);
+                blues.Add(stone);
             }
         }
 
-        //Test Print
-        foreach (StoneController stone in redStones)
+        
+        foreach (StoneController stone in reds)
         {
             if(stone.inHome == true)
             {
                 stone.distanceFromCenter = Vector3.Distance(stone.transform.position, scoringCircle.transform.position);
             }
         }
-        foreach (StoneController stone in blueStones)
+        foreach (StoneController stone in blues)
         {
             if(stone.inHome == true)
             {
@@ -148,8 +135,8 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        //Check closest stone
-        foreach (StoneController stone in redStones)
+        //check closest stone
+        foreach (StoneController stone in reds)
         {
             if(stone.inHome == true)
             {
@@ -163,7 +150,7 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        foreach (StoneController stone in blueStones)
+        foreach (StoneController stone in blues)
         {
             if(stone.inHome == true)
             {
@@ -184,46 +171,46 @@ public class GameManager : MonoBehaviour
         }
         else if(closestRed == null && closestBlue != null)
         {
-            foreach (StoneController stone in blueStones)
+            foreach (StoneController stone in blues)
             {
                 if(stone.inHome == true)
                 {
-                    blueScore++;
+                    score2 = score2 + 1;
                 }
             }
         }
         else if(closestRed != null && closestBlue == null)
         {
-            foreach (StoneController stone in redStones)
+            foreach (StoneController stone in reds)
             {
                 if(stone.inHome == true)
                 {
-                    redScore++;
+                    score1 = score1 + 1;
                 }
             }
         }
         else if(closestRed.distanceFromCenter < closestBlue.distanceFromCenter)
         {
-            foreach (StoneController stone in redStones)
+            foreach (StoneController stone in reds)
             {
                 if(stone.distanceFromCenter < closestBlue.distanceFromCenter)
                 {
                     if(stone.inHome == true)
                     {
-                        redScore++;
+                        score1 = score1 + 1;
                     }
                 }
             }
         }
         else if(closestBlue.distanceFromCenter <= closestRed.distanceFromCenter)
         {
-            foreach (StoneController stone in blueStones)
+            foreach (StoneController stone in blues)
             {
                 if(stone.distanceFromCenter < closestRed.distanceFromCenter)
                 {
                     if(stone.inHome == true)
                     {
-                        blueScore++;
+                        score2 = score2 + 1;
                     }
                 }
             }
@@ -232,23 +219,23 @@ public class GameManager : MonoBehaviour
         updateScoreDisplay();
     }
 
-    void EndGame()
+    void end()
     {
-        Debug.Log("Game Over!");
+        Debug.Log("GAME OVER");
     }
 
     void OnRestart(InputValue press)
     {
         Debug.Log("Restart Pressed!");
-        currentRound = 1;
-        redScore = 0;
-        blueScore = 0;
+        round = 1;
+        score1 = 0;
+        score2 = 0;
         StartRound();
 
     }
 
-    public void OnStoneStopped()
+    public void Stopped()
     {
-        Invoke(nameof(SpawnNextStone), 0.5f); // short delay before next turn
+        Invoke(nameof(NextStone), 0.5f); //delay before next turn
     }
 }
