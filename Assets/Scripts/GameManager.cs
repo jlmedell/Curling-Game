@@ -237,6 +237,16 @@ public class GameManager : MonoBehaviour
         Debug.Log("Game Over!");
     }
 
+    void OnRestart(InputValue press)
+    {
+        Debug.Log("Restart Pressed!");
+        currentRound = 1;
+        redScore = 0;
+        blueScore = 0;
+        StartRound();
+
+    }
+
     public void OnStoneStopped()
     {
         Invoke(nameof(SpawnNextStone), 0.5f); // short delay before next turn
