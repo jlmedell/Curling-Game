@@ -23,10 +23,7 @@ public class GameManager : MonoBehaviour
     public int totalStonesPerTeam = 4;
 
     //Scoring
-    public GameObject button;
-    public GameObject ring4;
-    public GameObject ring8;
-    public GameObject ring12;
+    public GameObject scoringCircle;
     
     //UI
     public TextMeshProUGUI scoreDisplay;
@@ -118,6 +115,9 @@ public class GameManager : MonoBehaviour
         List<StoneController> blueStones = new List<StoneController>();
 
         StoneController[] stones = FindObjectsOfType<StoneController>();
+
+        StoneController closestRed = null;
+        StoneController closestBlue = null;
         
         //Seperate stones
         foreach (StoneController stone in stones)
@@ -132,9 +132,102 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        //Check closest stone
+        //Test Print
+        foreach (StoneController stone in redStones)
+        {
+            if(stone.inHome == true)
+            {
+                stone.distanceFromCenter = Vector3.Distance(stone.transform.position, scoringCircle.transform.position);
+            }
+        }
+        foreach (StoneController stone in blueStones)
+        {
+            if(stone.inHome == true)
+            {
+                stone.distanceFromCenter = Vector3.Distance(stone.transform.position, scoringCircle.transform.position);
+            }
+        }
 
-        
+        //Check closest stone
+        foreach (StoneController stone in redStones)
+        {
+            if(stone.inHome == true)
+            {
+                if(closestRed == null)
+                {
+                    closestRed = stone;
+                }
+                else if(stone.distanceFromCenter < closestRed.distanceFromCenter)
+                {
+                    closestRed = stone;
+                }
+            }
+        }
+        foreach (StoneController stone in blueStones)
+        {
+            if(stone.inHome == true)
+            {
+                if(closestBlue == null)
+                {
+                    closestBlue = stone;
+                }
+                else if(stone.distanceFromCenter < closestBlue.distanceFromCenter)
+                {
+                    closestBlue = stone;
+                }
+            }
+        }
+
+        if(closestRed == null && closestBlue == null)
+        {
+            Debug.Log("Lol Get Good");
+        }
+        else if(closestRed == null && closestBlue != null)
+        {
+            foreach (StoneController stone in blueStones)
+            {
+                if(stone.inHome == true)
+                {
+                    blueScore++;
+                }
+            }
+        }
+        else if(closestRed != null && closestBlue == null)
+        {
+            foreach (StoneController stone in redStones)
+            {
+                if(stone.inHome == true)
+                {
+                    redScore++;
+                }
+            }
+        }
+        else if(closestRed.distanceFromCenter < closestBlue.distanceFromCenter)
+        {
+            foreach (StoneController stone in redStones)
+            {
+                if(stone.distanceFromCenter < closestBlue.distanceFromCenter)
+                {
+                    if(stone.inHome == true)
+                    {
+                        redScore++;
+                    }
+                }
+            }
+        }
+        else if(closestBlue.distanceFromCenter <= closestRed.distanceFromCenter)
+        {
+            foreach (StoneController stone in blueStones)
+            {
+                if(stone.distanceFromCenter < closestRed.distanceFromCenter)
+                {
+                    if(stone.inHome == true)
+                    {
+                        blueScore++;
+                    }
+                }
+            }
+        }
         
         updateScoreDisplay();
     }
