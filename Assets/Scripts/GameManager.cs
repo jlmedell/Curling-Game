@@ -1,4 +1,7 @@
 using UnityEngine;
+using TMPro;
+//For lists
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,11 +14,22 @@ public class GameManager : MonoBehaviour
     private int currentRound = 1;
     private int stonesThrown = 0;
     private int currentTeam = 0;
+    private string[] teamName = {"Blue", "Red"};
+    private int redScore = 0;
+    private int blueScore = 0;
 
     private GameObject currentStone;
     public int totalStonesPerTeam = 4;
 
+    //Scoring
+    public GameObject button;
+    public GameObject ring4;
+    public GameObject ring8;
+    public GameObject ring12;
     
+    //UI
+    public TextMeshProUGUI scoreDisplay;
+    public TextMeshProUGUI currentEndDisplay;
 
     void Start()
     {
@@ -27,6 +41,9 @@ public class GameManager : MonoBehaviour
 
         stonesThrown = 0;
         currentTeam = 0;
+
+        updateRoundDisplay();
+        updateScoreDisplay();
 
         CleanupStones();
 
@@ -57,16 +74,31 @@ public class GameManager : MonoBehaviour
         {
             r.material.color = (currentTeam == 0) ? Color.red : Color.blue;
         }
+        currentStone.tag = (currentTeam == 0) ? "RedStone" : "BlueStone";
 
         stonesThrown++;
         currentTeam = 1 - currentTeam;
+        updateRoundDisplay();
+    }
+
+    void updateRoundDisplay()
+    {
+        currentEndDisplay.text = string.Format("Round {0}\nTeam {1}", (currentRound), (teamName[currentTeam]));
+    }
+
+    void updateScoreDisplay()
+    {
+        scoreDisplay.text = string.Format("Scores\n Red {0}\n Blue {1}", (redScore), (blueScore));
     }
 
     void EndRound()
     {
         Debug.Log("Round " + currentRound + " Complete");
 
+        scoring();
+
         currentRound++;
+        updateRoundDisplay();
 
         if (currentRound > totalRounds)
         {
@@ -76,6 +108,34 @@ public class GameManager : MonoBehaviour
         {
             Invoke(nameof(StartRound), 2f);
         }
+    }
+
+    void scoring()
+    {
+        //Lists to store all Red stones and Blue stones
+        List<StoneController> redStones = new List<StoneController>();
+        List<StoneController> blueStones = new List<StoneController>();
+
+        StoneController[] stones = FindObjectsOfType<StoneController>();
+        
+        //Seperate stones
+        foreach (StoneController stone in stones)
+        {
+            if(stone.tag == "RedStone")
+            {
+                redStones.Add(stone);
+            }
+            else
+            {
+                blueStones.Add(stone);
+            }
+        }
+
+        //Check closest stone
+        
+        
+        
+        updateScoreDisplay();
     }
 
     void EndGame()
