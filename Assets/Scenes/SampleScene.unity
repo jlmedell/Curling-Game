@@ -478,7 +478,7 @@ CapsuleCollider:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_LayerOverridePriority: 0
+  m_LayerOverridePriority: 2
   m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
@@ -1066,7 +1066,7 @@ CapsuleCollider:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_LayerOverridePriority: 0
+  m_LayerOverridePriority: 1
   m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
@@ -1278,7 +1278,7 @@ CapsuleCollider:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_LayerOverridePriority: 0
+  m_LayerOverridePriority: 3
   m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
@@ -1512,7 +1512,7 @@ CapsuleCollider:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_LayerOverridePriority: 0
+  m_LayerOverridePriority: 4
   m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1

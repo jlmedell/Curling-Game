@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.InputSystem;
 //For lists
 using System.Collections.Generic;
 
@@ -132,7 +133,7 @@ public class GameManager : MonoBehaviour
         }
 
         //Check closest stone
-        
+
         
         
         updateScoreDisplay();

@@ -16,20 +16,24 @@ public class ScoreColliders : MonoBehaviour
         
     }
 
-    private void onTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         StoneController stone = other.gameObject.GetComponent<StoneController>();
         stone.scoreString = objectName;
         Debug.Log("Stone enters " + stone.scoreString);
     }
-    
-    private void onTriggerExit(Collider other)
+
+    private  void OnTriggerStay(Collider other)
     {
         StoneController stone = other.gameObject.GetComponent<StoneController>();
-        if(stone.scoreString == "Ring 12")
-        {
-            stone.scoreString = "None";
-        }
+        stone.scoreString = objectName;
+        Debug.Log("Stone stays " + stone.scoreString);
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        StoneController stone = other.gameObject.GetComponent<StoneController>();
+        stone.scoreString = "None";
         Debug.Log("Stone leaves " + stone.scoreString);
     }
 }
