@@ -25,6 +25,7 @@ public class StoneController : MonoBehaviour
     float stopTimer = 0f;
     public float stopThreshold = 0.08f;
     public float stopTimeRequired = 0.5f;
+    public string scoreString = "None";
 
     private Slider powerBar;
 

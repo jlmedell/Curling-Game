@@ -441,6 +441,7 @@ GameObject:
   - component: {fileID: 392404059}
   - component: {fileID: 392404058}
   - component: {fileID: 392404057}
+  - component: {fileID: 392404060}
   m_Layer: 0
   m_Name: 8' Ring
   m_TagString: Untagged
@@ -478,9 +479,9 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5000001
   m_Height: 2
@@ -543,6 +544,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 392404055}
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &392404060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 392404055}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b321e10504dbc7f4492d0c329aba694f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScoreColliders
+  objectName: Ring 8
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -1015,6 +1029,7 @@ GameObject:
   - component: {fileID: 689728823}
   - component: {fileID: 689728822}
   - component: {fileID: 689728821}
+  - component: {fileID: 689728824}
   m_Layer: 0
   m_Name: 12' Ring
   m_TagString: Untagged
@@ -1052,9 +1067,9 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5000001
   m_Height: 2
@@ -1117,6 +1132,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 689728819}
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &689728824
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 689728819}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b321e10504dbc7f4492d0c329aba694f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScoreColliders
+  objectName: Ring 12
 --- !u!1 &778619361
 GameObject:
   m_ObjectHideFlags: 0
@@ -1142,7 +1170,7 @@ Transform:
   m_GameObject: {fileID: 778619361}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.05063, y: 0, z: 27.72731}
+  m_LocalPosition: {x: -3.05063, y: 0.1, z: 27.72731}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1213,6 +1241,7 @@ GameObject:
   - component: {fileID: 979725517}
   - component: {fileID: 979725516}
   - component: {fileID: 979725515}
+  - component: {fileID: 979725518}
   m_Layer: 0
   m_Name: 4' Ring
   m_TagString: Untagged
@@ -1250,9 +1279,9 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5000001
   m_Height: 2
@@ -1315,6 +1344,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 979725513}
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &979725518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 979725513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b321e10504dbc7f4492d0c329aba694f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScoreColliders
+  objectName: Ring 4
 --- !u!1 &1025124706
 GameObject:
   m_ObjectHideFlags: 0
@@ -1433,6 +1475,7 @@ GameObject:
   - component: {fileID: 1378520489}
   - component: {fileID: 1378520488}
   - component: {fileID: 1378520487}
+  - component: {fileID: 1378520490}
   m_Layer: 0
   m_Name: Button
   m_TagString: Untagged
@@ -1470,9 +1513,9 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5000001
   m_Height: 2
@@ -1535,6 +1578,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1378520485}
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1378520490
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1378520485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b321e10504dbc7f4492d0c329aba694f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScoreColliders
+  objectName: Ring 0
 --- !u!1 &1551887764
 GameObject:
   m_ObjectHideFlags: 0
