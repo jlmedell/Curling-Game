@@ -1,6 +1,6 @@
 # Curling Game
 
-Description: This was one of my smaller projects; a small, simple physics-based game that simulates curling
+Description: This was one of my smaller projects; a small, simple physics-based game that simulates curling. Developed alongside a partner.
 
 Controls:
 
